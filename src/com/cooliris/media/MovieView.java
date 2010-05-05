@@ -27,6 +27,9 @@ import android.view.WindowManager;
 
 import com.cooliris.app.App;
 import com.cooliris.app.Res;
+import android.database.Cursor;
+import android.net.Uri;
+import android.util.Log;
 
 /**
  * This activity plays a video from a specified URI.
@@ -65,6 +68,21 @@ public class MovieView extends Activity {
         WindowManager.LayoutParams winParams = win.getAttributes();
         winParams.buttonBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_OFF;
         win.setAttributes(winParams);
+
+        //Add a log for currently playing file name
+        Uri videoUri = intent.getData();
+        String columns[] = new String[] { MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.TITLE};
+        Cursor cur = managedQuery(videoUri,columns, null,null,null);
+	 
+        if( (cur != null)&&cur.moveToFirst()) {
+            String DATA = null;
+            String TITLE = null;
+            do {
+              DATA = cur.getString(cur.getColumnIndex(MediaStore.MediaColumns.DATA));
+              TITLE = cur.getString(cur.getColumnIndex(MediaStore.MediaColumns.TITLE));
+              Log.i(TAG,"Data: "+DATA+" Title: "+TITLE);
+           } while (cur.moveToNext());
+        }
     }
 
     @Override

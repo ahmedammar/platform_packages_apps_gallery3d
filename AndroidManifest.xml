@@ -118,6 +118,7 @@
                 <data android:mimeType="video/3gp" />
                 <data android:mimeType="video/3gpp" />
                 <data android:mimeType="video/3gpp2" />
+                <data android:mimeType="video/x-flv" />
              </intent-filter>
         </activity>
 

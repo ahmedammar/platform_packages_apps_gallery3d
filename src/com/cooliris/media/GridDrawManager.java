@@ -141,7 +141,7 @@ public final class GridDrawManager {
         grid.bindArrays(gl);
         int numTexturesQueued = 0;
         Context context = view.getContext();
-        for (int itrSlotIndex = firstBufferedVisibleSlot; itrSlotIndex <= lastBufferedVisibleSlot; ++itrSlotIndex) {
+        for (int itrSlotIndex = firstBufferedVisibleSlot; itrSlotIndex < lastBufferedVisibleSlot; ++itrSlotIndex) {
             int index = itrSlotIndex;
             boolean priority = !(index < firstVisibleSlot || index > lastVisibleSlot);
             int startSlotIndex = 0;
@@ -303,7 +303,7 @@ public final class GridDrawManager {
         int firstBufferedVisibleSlot = mBufferedVisibleRange.begin;
         int lastBufferedVisibleSlot = mBufferedVisibleRange.end;
         boolean isCameraZAnimating = mCamera.isZAnimating();
-        for (int i = firstBufferedVisibleSlot; i <= lastBufferedVisibleSlot; ++i) {
+        for (int i = firstBufferedVisibleSlot; i < lastBufferedVisibleSlot; ++i) {
             if (selectedSlotIndex != Shared.INVALID && (i >= selectedSlotIndex - 2 && i <= selectedSlotIndex + 2)) {
                 continue;
             }
@@ -490,7 +490,7 @@ public final class GridDrawManager {
             GridDrawables.sFrame.bindArrays(gl);
             Texture texturePlaceHolder = (state == GridLayer.STATE_GRID_VIEW) ? drawables.mTextureGridFrame
                     : drawables.mTextureFrame;
-            for (int i = firstBufferedVisibleSlot; i <= lastBufferedVisibleSlot; ++i) {
+            for (int i = firstBufferedVisibleSlot; i < lastBufferedVisibleSlot; ++i) {
                 if (i < firstVisibleSlot || i > lastVisibleSlot) {
                     continue;
                 }
@@ -566,7 +566,7 @@ public final class GridDrawManager {
 
                 boolean itemsPresent = false;
 
-                for (int i = firstBufferedVisibleSlot; i <= lastBufferedVisibleSlot; ++i) {
+                for (int i = firstBufferedVisibleSlot; i < lastBufferedVisibleSlot; ++i) {
                     itemsPresent = true;
                     if (mSpreadValue > 1.0f)
                         continue;
@@ -599,7 +599,7 @@ public final class GridDrawManager {
 
                 float yLocOffset = 0.2f;
                 gl.glTranslatef(0.0f, -yLocOffset, 0.0f);
-                for (int i = firstBufferedVisibleSlot; i <= lastBufferedVisibleSlot; ++i) {
+                for (int i = firstBufferedVisibleSlot; i < lastBufferedVisibleSlot; ++i) {
                     if (mSpreadValue > 1.0f)
                         continue;
                     DisplayItem displayItem = displayItems[(i - firstBufferedVisibleSlot) * GridLayer.MAX_ITEMS_PER_SLOT];
@@ -616,7 +616,7 @@ public final class GridDrawManager {
                     GridDrawables.sLocationGrid.bindArrays(gl);
                     Texture locationTexture = drawables.mTextureLocation;
                     final float yLocationLabelOffset = 0.19f;
-                    for (int i = firstBufferedVisibleSlot; i <= lastBufferedVisibleSlot; ++i) {
+                    for (int i = firstBufferedVisibleSlot; i < lastBufferedVisibleSlot; ++i) {
                         if (mCurrentScaleSlot != Shared.INVALID)
                             continue;
                         DisplayItem displayItem = displayItems[(i - firstBufferedVisibleSlot) * GridLayer.MAX_ITEMS_PER_SLOT];
@@ -643,7 +643,7 @@ public final class GridDrawManager {
                 } else if (state == GridLayer.STATE_MEDIA_SETS && stackMixRatio > 0.0f) {
                     GridDrawables.sSourceIconGrid.bindArrays(gl);
                     Texture transparentTexture = drawables.mTextureTransparent;
-                    for (int i = firstBufferedVisibleSlot; i <= lastBufferedVisibleSlot; ++i) {
+                    for (int i = firstBufferedVisibleSlot; i < lastBufferedVisibleSlot; ++i) {
                         DisplayItem displayItem = displayItems[(i - firstBufferedVisibleSlot) * GridLayer.MAX_ITEMS_PER_SLOT];
                         if (mCurrentScaleSlot != Shared.INVALID)
                             continue;
@@ -674,7 +674,7 @@ public final class GridDrawManager {
                 view.prime(textureSelectedOn, true);
                 view.prime(textureSelectedOff, true);
                 GridDrawables.sSelectedGrid.bindArrays(gl);
-                for (int i = firstBufferedVisibleSlot; i <= lastBufferedVisibleSlot; ++i) {
+                for (int i = firstBufferedVisibleSlot; i < lastBufferedVisibleSlot; ++i) {
                     DisplayItem displayItem = displayItems[(i - firstBufferedVisibleSlot) * GridLayer.MAX_ITEMS_PER_SLOT];
                     if (displayItem != null) {
                         Texture textureToUse = selectedBucketList.find(displayItem.mItemRef) ? textureSelectedOn
@@ -686,7 +686,7 @@ public final class GridDrawManager {
             }
             GridDrawables.sVideoGrid.bindArrays(gl);
             Texture videoTexture = drawables.mTextureVideo;
-            for (int i = firstBufferedVisibleSlot; i <= lastBufferedVisibleSlot; ++i) {
+            for (int i = firstBufferedVisibleSlot; i < lastBufferedVisibleSlot; ++i) {
                 DisplayItem displayItem = displayItems[(i - firstBufferedVisibleSlot) * GridLayer.MAX_ITEMS_PER_SLOT];
                 if (displayItem != null && displayItem.mAlive) {
                     if (displayItem.mItemRef.getMediaType() == MediaItem.MEDIA_TYPE_VIDEO) {

@@ -88,8 +88,8 @@ public final class GridLayer extends RootLayer implements MediaFeed.Listener, Ti
     private int mCurrentExpandedSlot;
 
     private final DisplayList mDisplayList = new DisplayList();
-    private final DisplayItem[] mDisplayItems = new DisplayItem[MAX_ITEMS_DRAWABLE];
-    private final DisplaySlot[] mDisplaySlots = new DisplaySlot[MAX_DISPLAY_SLOTS];
+    private final DisplayItem[] mDisplayItems = new DisplayItem[MAX_ITEMS_DRAWABLE+MAX_ITEMS_PER_SLOT];
+    private final DisplaySlot[] mDisplaySlots = new DisplaySlot[MAX_DISPLAY_SLOTS+1];
     private ArrayList<MediaItem> mVisibleItems;
 
     private final BackgroundLayer mBackground;
@@ -142,7 +142,7 @@ public final class GridLayer extends RootLayer implements MediaFeed.Listener, Ti
         mTempVecAlt = new Pool<Vector3f>(vectorPoolRenderThread);
 
         DisplaySlot[] displaySlots = mDisplaySlots;
-        for (int i = 0; i < MAX_DISPLAY_SLOTS; ++i) {
+        for (int i = 0; i < MAX_DISPLAY_SLOTS+1; ++i) {
             DisplaySlot slot = new DisplaySlot();
             displaySlots[i] = slot;
         }
@@ -1102,7 +1102,7 @@ public final class GridLayer extends RootLayer implements MediaFeed.Listener, Ti
 
     DisplayItem getDisplayItemForSlotId(int slotId) {
         int index = slotId - mBufferedVisibleRange.begin;
-        if (index >= 0 && slotId < mBufferedVisibleRange.end) {
+        if (index >= 0 && slotId <= mBufferedVisibleRange.end) {
             return mDisplayItems[index * MAX_ITEMS_PER_SLOT];
         }
         return null;
@@ -1121,7 +1121,7 @@ public final class GridLayer extends RootLayer implements MediaFeed.Listener, Ti
     boolean changeFocusToSlot(int slotId, float convergence) {
         mZoomValue = 1.0f;
         int index = slotId - mBufferedVisibleRange.begin;
-        if (index >= 0 && slotId < mBufferedVisibleRange.end) {
+        if (index >= 0 && slotId <= mBufferedVisibleRange.end) {
             DisplayItem displayItem = mDisplayItems[index * MAX_ITEMS_PER_SLOT];
             if (displayItem != null) {
                 MediaItem item = displayItem.mItemRef;

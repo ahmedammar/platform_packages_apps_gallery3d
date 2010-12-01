@@ -68,6 +68,7 @@ public class LocalDataSource implements DataSource {
     private boolean mIncludeImages;
     private boolean mIncludeVideos;
     private Context mContext;
+    private boolean debug = false;
 
     public LocalDataSource(final Context context, final String uri, final boolean flattenAllItems) {
         this.mUri = uri;
@@ -297,7 +298,6 @@ public class LocalDataSource implements DataSource {
                     final String whereVideos = Video.VideoColumns.BUCKET_ID + "=" + Long.toString(set.mId);
                     cr.delete(uriImages, whereImages, null);
                     cr.delete(uriVideos, whereVideos, null);
-                    //CacheService.markDirty();
                 }
                 if (set != null && items != null) {
                     // We need to remove these items from the set.
@@ -313,7 +313,6 @@ public class LocalDataSource implements DataSource {
                     }
                     set.updateNumExpectedItems();
                     set.generateTitle(true);
-                    //CacheService.markDirty(set.mId);
                 }
             }
             break;
@@ -437,6 +436,7 @@ public class LocalDataSource implements DataSource {
         // We check to see what has changed.
         long[] ids = CacheService.computeDirtySets(mContext);
         int numDirtySets = ids.length;
+        if (debug) Log.i(TAG, String.format("The dirty count is %d.", numDirtySets));
         for (int i = 0; i < numDirtySets; ++i) {
             long setId = ids[i];
             if (feed.getMediaSet(setId) != null) {
@@ -452,6 +452,7 @@ public class LocalDataSource implements DataSource {
                 mediaSet.generateTitle(true);
             }
         }
+        loadMediaSets(feed);
     }
 
 }

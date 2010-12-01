@@ -81,6 +81,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="video/*" />
              </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_EJECT" />
+                <data android:scheme="file" />
+            </intent-filter>
         </activity>
         <activity android:name="com.cooliris.media.CropImage"
             android:configChanges="orientation|keyboardHidden" android:label="@string/crop_label">

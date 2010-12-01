@@ -27,6 +27,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import android.os.Environment;
+
 public class BootReceiver extends BroadcastReceiver {
     private static final String TAG = "BootReceiver";
     
@@ -51,6 +53,13 @@ public class BootReceiver extends BroadcastReceiver {
             CacheService.sAlbumCache.close();
             CacheService.sMetaAlbumCache.close();
             CacheService.sSkipThumbnailIds.flush();
+
+            //start a new Galley
+            Intent intentNew = new Intent(); 
+            intentNew.setClassName( "com.cooliris.media",
+                "com.cooliris.media.Gallery" ); 
+            intentNew.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intentNew); 
         }
     }
 }

@@ -39,6 +39,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 import java.util.HashMap;
 
 public final class Gallery extends Activity {
@@ -75,6 +77,12 @@ public final class Gallery extends Activity {
                     break;
             }
         }
+    };
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {    
+        public void onReceive(Context context, Intent intent) {    
+                    finish(); 
+                }    
     };
 
     private void checkStorage() {
@@ -154,7 +162,11 @@ public final class Gallery extends Activity {
 
         sendInitialMessage();
 
-        Log.i(TAG, "onCreate");
+        IntentFilter iFilter = new IntentFilter();
+        iFilter.addAction(Intent.ACTION_MEDIA_EJECT);
+        iFilter.addDataScheme("file");
+        registerReceiver(receiver, iFilter);    
+
     }
 
     private void sendInitialMessage() {
@@ -234,7 +246,7 @@ public final class Gallery extends Activity {
             }
             mWakeLock = null;
         }
-
+        
         LocalDataSource.sThumbnailCache.flush();
         LocalDataSource.sThumbnailCacheVideo.flush();
         PicasaDataSource.sThumbnailCache.flush();
@@ -261,6 +273,11 @@ public final class Gallery extends Activity {
         // Force GLThread to exit.
         setContentView(Res.layout.main);
 
+        if (receiver != null)
+        {
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
         // Remove any post messages.
         handler.removeMessages(CHECK_STORAGE);
         handler.removeMessages(HANDLE_INTENT);
@@ -283,7 +300,6 @@ public final class Gallery extends Activity {
         mGridLayer = null;
         mApp.shutdown();
         super.onDestroy();
-        Log.i(TAG, "onDestroy");
     }
 
     @Override
@@ -294,7 +310,6 @@ public final class Gallery extends Activity {
         }
         if (mRenderView != null)
             mRenderView.requestRender();
-        Log.i(TAG, "onConfigurationChanged");
     }
 
     @Override
@@ -361,6 +376,7 @@ public final class Gallery extends Activity {
     }
 
     private void initializeDataSource() {
+
         final boolean hasStorage = mImageManagerHasStorageAfterDelay;
         // Creating the DataSource objects.
         final PicasaDataSource picasaDataSource = new PicasaDataSource(Gallery.this);

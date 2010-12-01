@@ -79,7 +79,7 @@ public final class CacheService extends IntentService {
 
     private static final String TAG = "CacheService";
     private static ImageList sList = null;
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     // Wait 2 seconds to start the thumbnailer so that the application can load
     // without any overheads.
@@ -190,6 +190,7 @@ public final class CacheService extends IntentService {
     }
 
     public static final void markDirty(final long id) {
+        
         if (id == Shared.INVALID) {
             return;
         }
@@ -980,17 +981,21 @@ public final class CacheService extends IntentService {
                     boolean allDirty = false;
                     do {
                         long setId = setIds.get(ctr);
+                        if (DEBUG) Log.i(TAG, String.format("In database setId:%d.", setId));
                         if (allDirty) {
+                            if (DEBUG) Log.i(TAG, String.format("add setId:%d.", setId));
                             addNoDupe(retVal, setId);
                         } else {
                             boolean contains = sAlbumCache.isDataAvailable(setId, 0);
                             if (!contains) {
                                 // We need to refresh everything.
+                                if (DEBUG) Log.i(TAG, String.format("setId:%d,need to refresh everything.", setId));
                                 markDirty();
                                 addNoDupe(retVal, setId);
                                 allDirty = true;
                             }
                             if (!allDirty) {
+                                if (DEBUG) Log.i(TAG, "not allDirty!");
                                 long maxAdd = maxAdded.get(ctr);
                                 int count = counts.get(ctr);
                                 byte[] data = sMetaAlbumCache.get(setId, 0);
@@ -1019,12 +1024,16 @@ public final class CacheService extends IntentService {
                             final int numAlbums = dis.readInt();
                             for (int i = 0; i < numAlbums; ++i) {
                                 final long setId = dis.readLong();
+                                if (DEBUG) Log.i(TAG, String.format("in cache setId is %d.", setId));
                                 Utils.readUTF(dis);
                                 dis.readBoolean();
                                 dis.readBoolean();
                                 if (!setIds.contains(setId)) {
                                     // This set was deleted, we need to recompute the cache.
+                                    
+                                    if (DEBUG) Log.i(TAG, String.format("This set was deleted!setid:%d, mark it!", setId));
                                     markDirty();
+                                    //addNoDupe(retVal, setId);
                                     break;
                                 }
                             }

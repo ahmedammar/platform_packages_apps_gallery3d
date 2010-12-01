@@ -45,6 +45,8 @@ public final class MediaFeed implements Runnable {
     private static final int NUM_INTERRUPT_RETRIES = 30;
     private static final int JOIN_TIMEOUT = 50;
 
+    private boolean mDebug = false;
+
     private IndexRange mVisibleRange = new IndexRange();
     private IndexRange mBufferedRange = new IndexRange();
     private ArrayList<MediaSet> mMediaSets = new ArrayList<MediaSet>();
@@ -270,6 +272,7 @@ public final class MediaFeed implements Runnable {
                             MediaClustering clustering = mClusterSets.get(set);
                             for (int j = 0; j < numItems; ++j) {
                                 MediaItem item = items.get(j);
+                                if (mDebug) Log.i(TAG, "remote item uri:" + item.mContentUri.toString());
                                 removeItemFromMediaSet(item, set);
                                 if (clustering != null) {
                                     clustering.removeItemFromClustering(item);
@@ -427,6 +430,7 @@ public final class MediaFeed implements Runnable {
         mIsShutdown = false;
         mAlbumSourceThread = new Thread(new Runnable() {
             public void run() {
+                if (mDebug) Log.i(TAG, "start!");
                 if (mContext == null)
                     return;
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
@@ -516,6 +520,7 @@ public final class MediaFeed implements Runnable {
     }
 
     public void run() {
+        if (mDebug) Log.i(TAG, "run start!");
         DataSource dataSource = mDataSource;
         int sleepMs = 10;
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
@@ -523,6 +528,7 @@ public final class MediaFeed implements Runnable {
             while (!Thread.interrupted() && !mIsShutdown) {
                 String[] databaseUris = null;
                 boolean performRefresh = false;
+                if (mDebug) Log.i(TAG, "before mRequestedRefresh!");
                 synchronized (mRequestedRefresh) {
                     if (mRequestedRefresh.size() > 0) {
                         // We prune this first.
@@ -546,6 +552,7 @@ public final class MediaFeed implements Runnable {
                         databaseUris = (String[]) uris.keySet().toArray(databaseUris);
                     }
                 }
+                if (mDebug) Log.i(TAG, "before performRefresh!");
                 boolean settingFeedAboutToChange = false;
                 if (performRefresh) {
                     if (dataSource != null) {
@@ -553,10 +560,13 @@ public final class MediaFeed implements Runnable {
                             settingFeedAboutToChange = true;
                             mListener.onFeedAboutToChange(this);
                         }
+                        if (mDebug) Log.i(TAG, "refresh!");
+
                         dataSource.refresh(this, databaseUris);
                         mMediaFeedNeedsToRun = true;
                     }
                 }
+                if (mDebug) Log.i(TAG, "mListenerNeedsUpdate && !mMediaFeedNeedsToRun");
                 if (mListenerNeedsUpdate && !mMediaFeedNeedsToRun) {
                     mListenerNeedsUpdate = false;
                     if (mListener != null)
@@ -591,6 +601,7 @@ public final class MediaFeed implements Runnable {
                     if (expandedSetIndex >= mMediaSets.size()) {
                         expandedSetIndex = Shared.INVALID;
                     }
+                    if (mDebug) Log.i(TAG, "expandedSetIndex!");
                     if (expandedSetIndex == Shared.INVALID) {
                         // We purge the sets outside this visibleRange.
                         int numSets = mediaSets.size();
@@ -618,6 +629,7 @@ public final class MediaFeed implements Runnable {
                                     sleepMs = 100;
                                     scanMediaSets = false;
                                 }
+                                
                                 if (!set.setContainsValidItems()) {
                                     mediaSets.remove(set);
                                     if (mListener != null) {
@@ -665,6 +677,7 @@ public final class MediaFeed implements Runnable {
                             }
                         }
                     }
+                    if (mDebug) Log.i(TAG, "expandedSetIndex != Shared.INVALID");
                     if (expandedSetIndex != Shared.INVALID) {
                         int numSets = mMediaSets.size();
                         for (int i = 0; i < numSets; ++i) {
@@ -684,6 +697,7 @@ public final class MediaFeed implements Runnable {
                         int numItemsLoaded = mediaSets.get(expandedSetIndex).mNumItemsLoaded;
                         int requestedItems = mVisibleRange.end;
                         // requestedItems count changes in clustering mode.
+                        if (mDebug) Log.i(TAG, "mInClusteringMode && mClusterSets != null");
                         if (mInClusteringMode && mClusterSets != null) {
                             requestedItems = 0;
                             MediaClustering clustering = mClusterSets.get(mediaSets.get(expandedSetIndex));
@@ -720,6 +734,7 @@ public final class MediaFeed implements Runnable {
                         }
                     }
                     MediaFilter filter = mMediaFilter;
+                    if (mDebug) Log.i(TAG, "filter != null && mMediaFilteredSet == null");
                     if (filter != null && mMediaFilteredSet == null) {
                         if (expandedSetIndex != Shared.INVALID) {
                             MediaSet set = mediaSets.get(expandedSetIndex);
@@ -878,7 +893,7 @@ public final class MediaFeed implements Runnable {
     }
 
     public MediaSet replaceMediaSet(long setId, DataSource dataSource) {
-        Log.i(TAG, "Replacing media set " + setId);
+        if (mDebug) Log.i(TAG, "Replacing media set " + setId);
         final MediaSet set = getMediaSet(setId);
         if (set != null)
             set.refresh();
@@ -902,6 +917,8 @@ public final class MediaFeed implements Runnable {
     }
 
     public void refresh() {
+        if (mDebug) Log.i(TAG, "database refresh!");
+
         if (mDataSource != null) {
             synchronized (mRequestedRefresh) {
                 mRequestedRefresh.add(mDataSource.getDatabaseUris());

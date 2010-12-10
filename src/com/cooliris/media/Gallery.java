@@ -81,7 +81,9 @@ public final class Gallery extends Activity {
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {    
         public void onReceive(Context context, Intent intent) {    
-                    finish(); 
+                    Intent intent_new = getIntent();
+                    finish();
+                    startActivity(intent_new);  
                 }    
     };
 

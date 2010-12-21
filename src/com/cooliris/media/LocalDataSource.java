@@ -441,6 +441,8 @@ public class LocalDataSource implements DataSource {
             long setId = ids[i];
             if (feed.getMediaSet(setId) != null) {
                 MediaSet newSet = feed.replaceMediaSet(setId, this);
+                if (newSet.mName == null)
+                    newSet.mName = Utils.getBucketNameFromId(mContext.getContentResolver(), setId);
                 newSet.generateTitle(true);
             } else {
                 MediaSet mediaSet = feed.addMediaSet(setId, this);
@@ -449,10 +451,10 @@ public class LocalDataSource implements DataSource {
                 } else if (setId == DOWNLOAD_BUCKET_ID) {
                     mediaSet.mName = DOWNLOAD_STRING;
                 }
+                if (mediaSet.mName == null)
+                    mediaSet.mName = Utils.getBucketNameFromId(mContext.getContentResolver(), setId);
                 mediaSet.generateTitle(true);
             }
         }
-        loadMediaSets(feed);
     }
-
 }

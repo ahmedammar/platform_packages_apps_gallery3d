@@ -234,6 +234,36 @@ public class Utils {
         return "";
     }
 
+    public static String getBucketNameFromId(final ContentResolver cr, final long bucketId) {
+        if (bucketId != Shared.INVALID) {
+            try {
+                Cursor cursor = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        new String[] { MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME },
+                        MediaStore.Images.ImageColumns.BUCKET_ID + "='" + bucketId + "'", null, null);
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        String setName = cursor.getString(0);
+                        cursor.close();
+                        return setName;
+                    }
+                }
+                cursor = cr.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                        new String[] { MediaStore.Video.VideoColumns.BUCKET_DISPLAY_NAME }, MediaStore.Video.VideoColumns.BUCKET_ID
+                                + "='" + bucketId + "'", null, null);
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        String setName = cursor.getString(0);
+                        cursor.close();
+                        return setName;
+                    }
+                }
+            } catch (Exception e) {
+                ;
+            }
+        }
+        return "";
+    }
+
     // Copies src file to dst file.
     // If the dst file does not exist, it is created
     public static void Copy(File src, File dst) throws IOException {
